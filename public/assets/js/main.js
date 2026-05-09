@@ -44,6 +44,7 @@ const el = {
   humidityValue: document.getElementById("humidityValue"),
   windValue: document.getElementById("windValue"),
   skyMessage: document.getElementById("skyMessage"),
+  iconWrap: document.querySelector(".icon-wrap"),
   weatherForm: document.getElementById("weatherForm"),
   cityInput: document.getElementById("cityInput"),
   loginBtn: document.getElementById("loginBtn"),
@@ -57,6 +58,18 @@ const el = {
   loginForm: document.getElementById("loginForm"),
   registerForm: document.getElementById("registerForm"),
 };
+
+function weatherIcon(main) {
+  const key = String(main || "").toLowerCase();
+  if (key.includes("thunderstorm")) return "⛈️";
+  if (key.includes("drizzle")) return "🌦️";
+  if (key.includes("rain")) return "🌧️";
+  if (key.includes("snow")) return "❄️";
+  if (key.includes("mist") || key.includes("fog") || key.includes("haze") || key.includes("smoke")) return "🌫️";
+  if (key.includes("cloud")) return "☁️";
+  if (key.includes("clear")) return "☀️";
+  return "🌤️";
+}
 
 function notify(message) {
   el.toast.textContent = message;
@@ -106,7 +119,9 @@ function paintWeather(w) {
   el.tempValue.textContent = `${Math.round(w.main.temp)}°`;
   el.humidityValue.textContent = `${w.main.humidity}%`;
   el.windValue.textContent = `${w.wind.speed} m/s`;
-  el.skyMessage.textContent = w.weather[0].main;
+  const main = w.weather[0].main;
+  el.skyMessage.textContent = main;
+  el.iconWrap.textContent = weatherIcon(main);
 }
 
 async function loadSession() {
