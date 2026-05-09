@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherCast</title>
+    <title>RENE METEO</title>
     <link rel="stylesheet" href="<?= htmlspecialchars($baseUrl) ?>/assets/css/style.css">
 </head>
 <body data-base-url="<?= htmlspecialchars($baseUrl) ?>">
     <main class="page">
         <header class="topbar shell">
-            <a href="#" class="brand">AetherCast</a>
+            <a href="#" class="brand">RENE METEO</a>
             <div class="topbar-actions">
                 <button id="themeToggle" class="btn link-btn" type="button">Tema</button>
                 <button id="languageToggle" class="btn link-btn" type="button">EN</button>
@@ -56,7 +56,7 @@
     </main>
 
     <footer class="footer shell">
-        <p>© 2026 AetherCast. Forecast weather. Precision in every breeze.</p>
+        <p>© 2026 RENE METEO. Forecast weather. Precision in every breeze.</p>
         <nav>
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
