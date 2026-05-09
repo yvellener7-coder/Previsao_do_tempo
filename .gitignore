@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+
+# Arquivo local para chave/config da API (não versionar)
+app/config/api.php
+app/config/api.local.php

@@ -1,0 +1,5 @@
+<?php
+
+return [
+    '/' => ['HomeController', 'index'],
+];
