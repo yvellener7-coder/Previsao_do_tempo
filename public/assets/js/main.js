@@ -5,6 +5,7 @@ const state = {
   isAuthenticated: false,
   lang: localStorage.getItem("lang") || "pt",
   theme: localStorage.getItem("theme") || "light",
+  userName: null,
 };
 
 const text = {
@@ -57,6 +58,7 @@ const el = {
   registerModal: document.getElementById("registerModal"),
   loginForm: document.getElementById("loginForm"),
   registerForm: document.getElementById("registerForm"),
+  heroTitle: document.querySelector(".hero-title"),
 };
 
 function weatherIcon(main) {
@@ -108,9 +110,14 @@ function updateAuthUi() {
   const guest = !state.isAuthenticated;
   el.cityInput.disabled = guest;
   el.searchBtn.disabled = guest;
-  el.loginBtn.style.display = guest ? "inline-block" : "inline-block";
+  el.loginBtn.style.display = guest ? "inline-block" : "none";
   el.registerBtn.style.display = guest ? "inline-block" : "none";
   el.logoutBtn.style.display = guest ? "none" : "inline-block";
+  if (state.isAuthenticated && state.userName) {
+    el.heroTitle.innerHTML = `Bem vindo,<br>${state.userName}`;
+  } else {
+    el.heroTitle.innerHTML = `Atmospheric<br>precision for your<br>journey.`;
+  }
 }
 
 function paintWeather(w) {
@@ -126,10 +133,12 @@ function paintWeather(w) {
 
 async function loadSession() {
   try {
-    await api("/auth/me");
+    const data = await api("/auth/me");
     state.isAuthenticated = true;
+    state.userName = data.user.name;
   } catch (_e) {
     state.isAuthenticated = false;
+    state.userName = null;
   }
   updateAuthUi();
 }
@@ -186,8 +195,7 @@ function bindActions() {
         body: JSON.stringify(Object.fromEntries(new FormData(el.loginForm).entries())),
       });
       closeModal(el.loginModal);
-      state.isAuthenticated = true;
-      updateAuthUi();
+      await loadSession();
       notify(text[state.lang].loginOk);
     } catch (err) {
       notify(err.message);
@@ -202,8 +210,7 @@ function bindActions() {
         body: JSON.stringify(Object.fromEntries(new FormData(el.registerForm).entries())),
       });
       closeModal(el.registerModal);
-      state.isAuthenticated = true;
-      updateAuthUi();
+      await loadSession();
       notify(text[state.lang].registerOk);
     } catch (err) {
       notify(err.message);
@@ -214,6 +221,7 @@ function bindActions() {
     try {
       await api("/auth/logout", { method: "POST" });
       state.isAuthenticated = false;
+      state.userName = null;
       updateAuthUi();
       notify(text[state.lang].logoutOk);
       await loadPublicWeather();
