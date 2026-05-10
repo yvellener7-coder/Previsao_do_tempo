@@ -15,6 +15,8 @@ const text = {
     register: "Registar",
     logout: "Sair",
     exportPdf: "Exportar PDF",
+    heroTitle: "Precisão atmosférica para sua jornada.",
+    heroText: "Encontre previsões confiáveis e salve seus resultados de clima favoritos.",
     search: "Pesquisar",
     placeholder: "Digite a cidade...",
     needLogin: "Faz login para pesquisar cidades.",
@@ -28,6 +30,9 @@ const text = {
     login: "Login",
     register: "Register",
     logout: "Logout",
+    exportPdf: "Export PDF",
+    heroTitle: "Atmospheric precision for your journey.",
+    heroText: "Find reliable forecasts and save your favorite weather results.",
     search: "Search",
     placeholder: "Enter city name...",
     needLogin: "Please login to search cities.",
@@ -56,11 +61,27 @@ const el = {
   searchBtn: document.querySelector("#weatherForm button[type='submit']"),
   languageToggle: document.getElementById("languageToggle"),
   themeToggle: document.getElementById("themeToggle"),
+  heroText: document.getElementById("heroText"),
+  weatherVisual: document.querySelector(".weather-visual"),
   loginModal: document.getElementById("loginModal"),
   registerModal: document.getElementById("registerModal"),
   loginForm: document.getElementById("loginForm"),
   registerForm: document.getElementById("registerForm"),
   heroTitle: document.querySelector(".hero-title"),
+};
+
+const weatherBackgrounds = {
+  clear: "url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1920&q=90')",
+  clouds: "url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=90')",
+  rain: "url('https://images.unsplash.com/photo-1526481280690-7c3f3cb944f2?auto=format&fit=crop&w=1920&q=90')",
+  drizzle: "url('https://images.unsplash.com/photo-1494783367193-149034c05e8f?auto=format&fit=crop&w=1920&q=90')",
+  thunderstorm: "url('https://images.unsplash.com/photo-1510218831416-24b0b24eb3ae?auto=format&fit=crop&w=1920&q=90')",
+  snow: "url('https://images.unsplash.com/photo-1518176258769-f227c798f252?auto=format&fit=crop&w=1920&q=90')",
+  mist: "url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1920&q=90')",
+  fog: "url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1920&q=90')",
+  haze: "url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1920&q=90')",
+  smoke: "url('https://images.unsplash.com/photo-1514820720304-17bd6f6bb6c4?auto=format&fit=crop&w=1920&q=90')",
+  default: "linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2))",
 };
 
 function weatherIcon(main) {
@@ -73,6 +94,26 @@ function weatherIcon(main) {
   if (key.includes("cloud")) return "☁️";
   if (key.includes("clear")) return "☀️";
   return "🌤️";
+}
+
+function weatherSceneClass(main) {
+  const key = String(main || "").toLowerCase();
+  if (key.includes("thunderstorm")) return "thunderstorm";
+  if (key.includes("drizzle")) return "rain";
+  if (key.includes("rain")) return "rain";
+  if (key.includes("snow")) return "snow";
+  if (key.includes("mist") || key.includes("fog") || key.includes("haze") || key.includes("smoke")) return "mist";
+  if (key.includes("cloud")) return "clouds";
+  if (key.includes("clear")) return "clear";
+  return "default";
+}
+
+function setPageBackground(scene) {
+  const bg = weatherBackgrounds[scene] || weatherBackgrounds.default;
+  document.body.style.backgroundImage = `${bg}, linear-gradient(to bottom, rgba(10, 24, 58, 0.25), rgba(255, 255, 255, 0.12))`;
+  document.body.style.backgroundSize = 'cover';
+  document.body.style.backgroundPosition = 'center';
+  document.body.style.backgroundAttachment = 'fixed';
 }
 
 function notify(message) {
@@ -106,6 +147,7 @@ function applyLanguage() {
   el.exportPdfBtn.textContent = text[state.lang].exportPdf;
   el.searchBtn.textContent = text[state.lang].search;
   el.cityInput.placeholder = text[state.lang].placeholder;
+  el.heroText.textContent = text[state.lang].heroText;
   applyTheme();
 }
 
@@ -119,8 +161,10 @@ function updateAuthUi() {
   el.logoutBtn.style.display = guest ? "none" : "inline-block";
   if (state.isAuthenticated && state.userName) {
     el.heroTitle.innerHTML = `Bem vindo,<br>${state.userName}`;
+    el.heroText.textContent = "Confira seu relatório de previsões em PDF.";
   } else {
-    el.heroTitle.innerHTML = `Atmospheric<br>precision for your<br>journey.`;
+    el.heroTitle.innerHTML = text[state.lang].heroTitle.replace(/\n/g, '<br>');
+    el.heroText.textContent = text[state.lang].heroText;
   }
 }
 
@@ -131,8 +175,15 @@ function paintWeather(w) {
   el.humidityValue.textContent = `${w.main.humidity}%`;
   el.windValue.textContent = `${w.wind.speed} m/s`;
   const main = w.weather[0].main;
+  const scene = weatherSceneClass(main);
   el.skyMessage.textContent = main;
   el.iconWrap.textContent = weatherIcon(main);
+  el.heroText.textContent = `Condição atual: ${w.weather[0].description}`;
+  setPageBackground(scene);
+  if (el.weatherVisual) {
+    el.weatherVisual.style.backgroundImage = weatherBackgrounds[scene] || weatherBackgrounds.default;
+    el.weatherVisual.className = 'weather-visual ' + scene;
+  }
 }
 
 async function loadSession() {

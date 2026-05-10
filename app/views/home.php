@@ -23,6 +23,7 @@
         <section class="hero shell">
             <article class="hero-left">
                 <h1 class="hero-title">Atmospheric<br>precision for your<br>journey.</h1>
+                <p id="heroText" class="hero-text">Encontre previsões confiáveis e salve seus resultados de clima favoritos.</p>
                 <form id="weatherForm" class="search">
                     <input type="text" name="city" id="cityInput" placeholder="Enter city name..." required>
                     <button class="btn search-btn" type="submit">Search</button>

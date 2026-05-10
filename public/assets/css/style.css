@@ -16,26 +16,40 @@ body.dark {
     --blue: #61a5ff;
     --blue-soft: #1f2f4d;
     --line: #2a3b5e;
+    background-image: linear-gradient(to bottom, rgba(5, 12, 30, 0.85), rgba(12, 21, 46, 0.7)), url('https://images.unsplash.com/photo-1547076591-3d32eca57724?auto=format&fit=crop&w=1920&q=80');
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); }
+body { margin: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; background: var(--bg); color: var(--text); background-image: linear-gradient(to bottom, rgba(135, 206, 235, 0.3), rgba(255, 255, 255, 0.12)), url('https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center; background-attachment: fixed; }
 .shell { width: min(1120px, 92vw); margin: 0 auto; }
 .topbar { padding: 18px 0; display: flex; justify-content: space-between; align-items: center; }
 .brand { text-decoration: none; color: var(--blue); font-weight: 700; font-size: 1.2rem; }
-.topbar-actions { display: flex; gap: 10px; align-items: center; }
-.btn { border: 0; cursor: pointer; font-weight: 600; }
-.link-btn { background: transparent; color: var(--text); }
-.pill-btn, .search-btn { border-radius: 999px; background: var(--blue); color: #fff; padding: 8px 16px; }
+.topbar-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { border: 0; cursor: pointer; font-weight: 600; transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.link-btn { background: transparent; color: var(--text); padding: 8px 10px; border-radius: 10px; }
+.link-btn:hover:not(:disabled) { background: rgba(10, 103, 232, 0.08); }
+.pill-btn, .search-btn { border-radius: 999px; background: var(--blue); color: #fff; padding: 10px 18px; }
+.pill-btn:hover:not(:disabled), .search-btn:hover:not(:disabled) { background: #0952c6; }
 
 .hero { margin-top: 18px; display: grid; grid-template-columns: 1fr 320px; gap: 28px; }
-.hero-title { color: var(--blue); font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.02; margin: 0 0 22px; }
+.hero-title { color: var(--blue); font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.02; margin: 0 0 22px; max-width: 720px; }
+.hero-text { margin: 0 0 24px; color: var(--muted); font-size: 1rem; line-height: 1.7; max-width: 620px; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { order: -1; }
+  .topbar { flex-wrap: wrap; gap: 10px; }
+  .topbar-actions { width: 100%; justify-content: flex-end; }
+  .search { width: 100%; }
+}
 
 .search { display: flex; background: var(--surface); border-radius: 11px; padding: 6px; border: 1px solid var(--line); box-shadow: 0 10px 24px rgba(10, 103, 232, 0.09); width: min(520px, 100%); }
 .search input { border: 0; background: transparent; padding: 10px; flex: 1; color: var(--text); }
 .search input:focus { outline: none; }
 
-.forecast-card { margin-top: 18px; width: min(560px, 100%); border-radius: 18px; background: var(--surface); border: 1px solid var(--line); padding: 18px; box-shadow: 0 16px 28px rgba(17, 47, 95, 0.08); }
+.forecast-card { margin-top: 18px; width: min(560px, 100%); border-radius: 18px; background: rgba(255, 255, 255, 0.95); border: 1px solid var(--line); padding: 18px; box-shadow: 0 16px 28px rgba(17, 47, 95, 0.15); backdrop-filter: blur(10px); }
 .forecast-top { display: flex; justify-content: space-between; align-items: center; }
 .city-line { margin: 0; font-weight: 700; }
 .meta-line { margin: 6px 0 0; color: var(--muted); }
@@ -45,7 +59,17 @@ body { margin: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; background:
 .metrics strong { margin-top: 4px; display: block; }
 
 .hero-right { display: flex; align-items: center; }
-.weather-visual { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; min-height: 340px; box-shadow: 0 20px 40px rgba(21, 61, 124, 0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
+.weather-visual { width: 100%; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--line); border-radius: 20px; min-height: 340px; box-shadow: 0 20px 40px rgba(21, 61, 124, 0.15); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; backdrop-filter: blur(10px); overflow: hidden; background-size: cover; background-position: center; position: relative; }
+.weather-visual::before { content: ""; position: absolute; inset: 0; background: rgba(15, 23, 42, 0.24); pointer-events: none; }
+.weather-visual > * { position: relative; z-index: 1; }
+.weather-visual.rain::before { background: rgba(10, 41, 83, 0.35); }
+.weather-visual.thunderstorm::before { background: rgba(6, 20, 56, 0.5); }
+.weather-visual.snow::before { background: rgba(255, 255, 255, 0.55); }
+.weather-visual.mist::before,
+.weather-visual.fog::before,
+.weather-visual.haze::before { background: rgba(255, 255, 255, 0.35); }
+.weather-visual.clouds::before { background: rgba(255, 255, 255, 0.2); }
+
 .icon-wrap { font-size: 5rem; }
 #skyMessage { margin: 0; background: var(--blue-soft); color: var(--blue); padding: 10px 18px; border-radius: 999px; font-weight: 700; }
 
@@ -53,7 +77,7 @@ body { margin: 0; font-family: Inter, "Segoe UI", Arial, sans-serif; background:
 .toast.show { opacity: 1; }
 
 .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35); z-index: 20; }
-.modal-content { width: min(420px, 92vw); margin: 9vh auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+.modal-content { width: min(420px, 92vw); margin: 9vh auto; background: rgba(255, 255, 255, 0.95); border: 1px solid var(--line); border-radius: 16px; padding: 18px; backdrop-filter: blur(15px); }
 .modal-content form { display: grid; gap: 8px; }
 .modal-content input { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: transparent; color: var(--text); }
 .close { float: right; cursor: pointer; font-size: 24px; }
