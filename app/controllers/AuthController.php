@@ -99,7 +99,8 @@ class AuthController
         }
 
         JsonResponse::send([
-            'message' => 'Não foi possível enviar o email de recuperação. Por favor, tente novamente mais tarde.',
+            'message' => 'Não foi possível enviar o email de recuperação. Use o token abaixo para redefinir sua senha.',
+            'reset_url' => $resetUrl,
             'reset_token' => $token,
         ]);
     }

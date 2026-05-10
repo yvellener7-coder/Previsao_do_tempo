@@ -4,15 +4,15 @@ class PdfReportService
 {
     public function generateReport(array $records, string $userName): string
     {
-        $title = 'RENE METEO - Relatório de Previsões';
+        $title = 'RENE METEO - Relatorio de Previsoes';
         $generatedAt = date('d/m/Y H:i');
 
         $lines = [];
         $lines[] = $title;
-        $lines[] = "Usuário: {$userName}";
+        $lines[] = "Usuario: {$userName}";
         $lines[] = "Gerado em: {$generatedAt}";
         $lines[] = '';
-        $lines[] = 'Histórico de previsões:';
+        $lines[] = 'Historico de previsoes:';
         $lines[] = '';
 
         if (count($records) === 0) {
@@ -37,6 +37,8 @@ class PdfReportService
 
     private function escapeText(string $text): string
     {
+        $text = iconv('UTF-8', 'ASCII//TRANSLIT', $text) ?: $text;
+        $text = preg_replace('/[^\x20-\x7E]/', '', $text);
         return str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $text);
     }
 

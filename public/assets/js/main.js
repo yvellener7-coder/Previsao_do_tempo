@@ -86,20 +86,8 @@ const el = {
   heroTitle: document.querySelector(".hero-title"),
 };
 
-const eclipseBg = "url('https://images.unsplash.com/photo-1610375885127-df4eb12e9d21?auto=format&fit=crop&w=1920&q=90')";
+const weatherBackdrop = "url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1920&q=90')"; // chuva, sol e nuvens realista
 
-const weatherClimateImages = {
-  clear: "url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1920&q=90')",
-  clouds: "url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=90')",
-  rain: "url('https://images.unsplash.com/photo-1526481280690-7c3f3cb944f2?auto=format&fit=crop&w=1920&q=90')",
-  drizzle: "url('https://images.unsplash.com/photo-1494783367193-149034c05e8f?auto=format&fit=crop&w=1920&q=90')",
-  thunderstorm: "url('https://images.unsplash.com/photo-1510218831416-24b0b24eb3ae?auto=format&fit=crop&w=1920&q=90')",
-  snow: "url('https://images.unsplash.com/photo-1518176258769-f227c798f252?auto=format&fit=crop&w=1920&q=90')",
-  mist: "url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1920&q=90')",
-  fog: "url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1920&q=90')",
-  haze: "url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1920&q=90')",
-  smoke: "url('https://images.unsplash.com/photo-1514820720304-17bd6f6bb6c4?auto=format&fit=crop&w=1920&q=90')",
-};
 
 function weatherIcon(main) {
   const key = String(main || "").toLowerCase();
@@ -125,9 +113,8 @@ function weatherSceneClass(main) {
   return "default";
 }
 
-function setPageBackground(scene = 'default') {
-  const bg = scene && scene !== 'default' ? weatherClimateImages[scene] : eclipseBg;
-  document.body.style.backgroundImage = `${bg || eclipseBg}, linear-gradient(to bottom, rgba(10, 24, 58, 0.35), rgba(255, 255, 255, 0.15))`;
+function setPageBackground() {
+  document.body.style.backgroundImage = `${weatherBackdrop}, linear-gradient(to bottom, rgba(10, 24, 58, 0.35), rgba(255, 255, 255, 0.15))`;
   document.body.style.backgroundSize = 'cover';
   document.body.style.backgroundPosition = 'center';
   document.body.style.backgroundAttachment = 'fixed';
@@ -198,7 +185,6 @@ function paintWeather(w) {
   el.heroText.textContent = `Condição atual: ${w.weather[0].description}`;
   setPageBackground(scene);
   if (el.weatherVisual) {
-    el.weatherVisual.style.backgroundImage = weatherClimateImages[scene] || weatherClimateImages.clear;
     el.weatherVisual.className = 'weather-visual ' + scene;
   }
 }
@@ -312,6 +298,19 @@ function bindActions() {
       });
       closeModal(el.forgotPasswordModal);
       notify(data.message || "Link enviado");
+      if (data.reset_token) {
+        if (el.resetTokenInput) {
+          el.resetTokenInput.value = data.reset_token;
+        }
+        openModal(el.resetPasswordModal);
+      } else if (data.reset_url) {
+        if (el.resetTokenInput) {
+          const tokenFromUrl = new URL(data.reset_url).searchParams.get('reset_token');
+          if (tokenFromUrl) {
+            el.resetTokenInput.value = tokenFromUrl;
+          }
+        }
+      }
     } catch (err) {
       notify(err.message);
     }
@@ -345,13 +344,43 @@ function bindActions() {
     }
   });
 
-  el.exportPdfBtn.addEventListener("click", () => {
+  el.exportPdfBtn.addEventListener("click", async () => {
     if (!state.isAuthenticated) {
       notify(text[state.lang].needLogin);
       openModal(el.loginModal);
       return;
     }
-    window.location.href = `${apiBase}/reports/weather-pdf`;
+
+    try {
+      const response = await fetch(`${apiBase}/reports/weather-pdf`, {
+        credentials: 'include',
+      });
+
+      const contentType = response.headers.get('Content-Type') || '';
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        notify(errorData?.error || 'Erro ao gerar relatório');
+        return;
+      }
+
+      if (contentType.includes('application/json')) {
+        const data = await response.json().catch(() => null);
+        notify(data?.error || data?.message || 'Erro ao gerar relatório');
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'relatorio_tempo.pdf';
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      notify(err.message || 'Erro ao gerar relatório');
+    }
   });
 
   el.weatherForm.addEventListener("submit", async (e) => {
@@ -384,7 +413,6 @@ function bindActions() {
 }
 
 async function init() {
-  setPageBackground();
   applyLanguage();
   bindModals();
   bindActions();
