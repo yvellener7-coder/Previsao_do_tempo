@@ -78,6 +78,9 @@
                 <label>Password</label>
                 <input type="password" name="password" required>
                 <button class="btn pill-btn" type="submit">Entrar</button>
+                <p style="margin-top: 14px; font-size: 0.95rem; color: var(--muted);">
+                    <a href="#" id="forgotPasswordLink" style="color: var(--blue); text-decoration: none;">Esqueceu a senha?</a>
+                </p>
             </form>
         </div>
     </div>
@@ -94,6 +97,32 @@
                 <label>Password</label>
                 <input type="password" name="password" minlength="6" required>
                 <button class="btn pill-btn" type="submit">Registar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Recuperar senha</h2>
+            <form id="forgotPasswordForm">
+                <label>Email</label>
+                <input type="email" name="email" required>
+                <button class="btn pill-btn" type="submit">Enviar link</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="resetPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Redefinir senha</h2>
+            <form id="resetPasswordForm">
+                <label>Token de recuperação</label>
+                <input type="text" name="token" id="resetTokenInput" required>
+                <label>Nova senha</label>
+                <input type="password" name="new_password" minlength="6" required>
+                <button class="btn pill-btn" type="submit">Redefinir senha</button>
             </form>
         </div>
     </div>

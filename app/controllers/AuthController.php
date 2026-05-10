@@ -72,7 +72,7 @@ class AuthController
         $userModel = new User($this->pdo);
         $user = $userModel->findByEmail($email);
         if (!$user) {
-            JsonResponse::send(['message' => 'Se o email existir, o token será gerado.']);
+            JsonResponse::send(['message' => 'Se o email existir, você receberá instruções de recuperação.']);
         }
 
         $token = bin2hex(random_bytes(32));
@@ -80,12 +80,40 @@ class AuthController
         $resetModel = new PasswordReset($this->pdo);
         $resetModel->create((int) $user['id'], $token, $expiresAt);
 
-        // Em produção, enviar este token por email.
+        $appUrl = $this->getAppUrl();
+        $resetUrl = sprintf('%s/?reset_token=%s', $appUrl, $token);
+        $subject = 'Recuperação de senha - RENE METEO';
+        $html = '<p>Olá ' . htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8') . ',</p>' .
+            '<p>Recebemos uma solicitação para redefinir sua senha em RENE METEO.</p>' .
+            '<p><a href="' . htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8') . '">Clique aqui para redefinir sua senha</a></p>' .
+            '<p>Se o link não funcionar, use este token na página de recuperação:</p>' .
+            '<p><strong>' . $token . '</strong></p>' .
+            '<p>O token expira em 1 hora.</p>' .
+            '<p>Se você não solicitou, ignore este email.</p>';
+
+        $mailer = new MailService();
+        $sent = $mailer->send($email, $subject, $html);
+
+        if ($sent) {
+            JsonResponse::send(['message' => 'Se o email existir, você receberá instruções de recuperação em breve.']);
+        }
+
         JsonResponse::send([
-            'message' => 'Token de recuperação gerado',
+            'message' => 'Não foi possível enviar o email de recuperação. Por favor, tente novamente mais tarde.',
             'reset_token' => $token,
-            'expires_at' => $expiresAt,
         ]);
+    }
+
+    private function getAppUrl(): string
+    {
+        $baseUrl = getenv('APP_BASE_URL');
+        if ($baseUrl !== false && $baseUrl !== '') {
+            return rtrim($baseUrl, '/');
+        }
+
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        return $scheme . '://' . $host;
     }
 
     public function resetPassword(): void

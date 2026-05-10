@@ -17,6 +17,11 @@ const text = {
     exportPdf: "Exportar PDF",
     heroTitle: "Precisão atmosférica para sua jornada.",
     heroText: "Encontre previsões confiáveis e salve seus resultados de clima favoritos.",
+    forgotPassword: "Recuperar senha",
+    sendResetLink: "Enviar link",
+    resetPassword: "Redefinir senha",
+    resetTokenLabel: "Token de recuperação",
+    resetPasswordSuccess: "Senha redefinida com sucesso",
     search: "Pesquisar",
     placeholder: "Digite a cidade...",
     needLogin: "Faz login para pesquisar cidades.",
@@ -33,6 +38,11 @@ const text = {
     exportPdf: "Export PDF",
     heroTitle: "Atmospheric precision for your journey.",
     heroText: "Find reliable forecasts and save your favorite weather results.",
+    forgotPassword: "Recover password",
+    sendResetLink: "Send link",
+    resetPassword: "Reset password",
+    resetTokenLabel: "Recovery token",
+    resetPasswordSuccess: "Password reset successfully",
     search: "Search",
     placeholder: "Enter city name...",
     needLogin: "Please login to search cities.",
@@ -63,6 +73,12 @@ const el = {
   themeToggle: document.getElementById("themeToggle"),
   heroText: document.getElementById("heroText"),
   weatherVisual: document.querySelector(".weather-visual"),
+  forgotPasswordLink: document.getElementById("forgotPasswordLink"),
+  forgotPasswordModal: document.getElementById("forgotPasswordModal"),
+  resetPasswordModal: document.getElementById("resetPasswordModal"),
+  forgotPasswordForm: document.getElementById("forgotPasswordForm"),
+  resetPasswordForm: document.getElementById("resetPasswordForm"),
+  resetTokenInput: document.getElementById("resetTokenInput"),
   loginModal: document.getElementById("loginModal"),
   registerModal: document.getElementById("registerModal"),
   loginForm: document.getElementById("loginForm"),
@@ -70,7 +86,9 @@ const el = {
   heroTitle: document.querySelector(".hero-title"),
 };
 
-const weatherBackgrounds = {
+const eclipseBg = "url('https://images.unsplash.com/photo-1610375885127-df4eb12e9d21?auto=format&fit=crop&w=1920&q=90')";
+
+const weatherClimateImages = {
   clear: "url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1920&q=90')",
   clouds: "url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1920&q=90')",
   rain: "url('https://images.unsplash.com/photo-1526481280690-7c3f3cb944f2?auto=format&fit=crop&w=1920&q=90')",
@@ -81,7 +99,6 @@ const weatherBackgrounds = {
   fog: "url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1920&q=90')",
   haze: "url('https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1920&q=90')",
   smoke: "url('https://images.unsplash.com/photo-1514820720304-17bd6f6bb6c4?auto=format&fit=crop&w=1920&q=90')",
-  default: "linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.2))",
 };
 
 function weatherIcon(main) {
@@ -108,9 +125,9 @@ function weatherSceneClass(main) {
   return "default";
 }
 
-function setPageBackground(scene) {
-  const bg = weatherBackgrounds[scene] || weatherBackgrounds.default;
-  document.body.style.backgroundImage = `${bg}, linear-gradient(to bottom, rgba(10, 24, 58, 0.25), rgba(255, 255, 255, 0.12))`;
+function setPageBackground(scene = 'default') {
+  const bg = scene && scene !== 'default' ? weatherClimateImages[scene] : eclipseBg;
+  document.body.style.backgroundImage = `${bg || eclipseBg}, linear-gradient(to bottom, rgba(10, 24, 58, 0.35), rgba(255, 255, 255, 0.15))`;
   document.body.style.backgroundSize = 'cover';
   document.body.style.backgroundPosition = 'center';
   document.body.style.backgroundAttachment = 'fixed';
@@ -181,7 +198,7 @@ function paintWeather(w) {
   el.heroText.textContent = `Condição atual: ${w.weather[0].description}`;
   setPageBackground(scene);
   if (el.weatherVisual) {
-    el.weatherVisual.style.backgroundImage = weatherBackgrounds[scene] || weatherBackgrounds.default;
+    el.weatherVisual.style.backgroundImage = weatherClimateImages[scene] || weatherClimateImages.clear;
     el.weatherVisual.className = 'weather-visual ' + scene;
   }
 }
@@ -221,23 +238,37 @@ function closeModal(modal) {
   modal.style.display = "none";
 }
 
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
 function bindModals() {
   el.loginBtn.addEventListener("click", () => {
     if (state.isAuthenticated) return;
     openModal(el.loginModal);
   });
   el.registerBtn.addEventListener("click", () => openModal(el.registerModal));
+  el.forgotPasswordLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeModal(el.loginModal);
+    openModal(el.forgotPasswordModal);
+  });
 
   document.querySelectorAll(".close").forEach((btn) => {
     btn.addEventListener("click", () => {
       closeModal(el.loginModal);
       closeModal(el.registerModal);
+      closeModal(el.forgotPasswordModal);
+      closeModal(el.resetPasswordModal);
     });
   });
 
   window.addEventListener("click", (e) => {
     if (e.target === el.loginModal) closeModal(el.loginModal);
     if (e.target === el.registerModal) closeModal(el.registerModal);
+    if (e.target === el.forgotPasswordModal) closeModal(el.forgotPasswordModal);
+    if (e.target === el.resetPasswordModal) closeModal(el.resetPasswordModal);
   });
 }
 
@@ -267,6 +298,35 @@ function bindActions() {
       closeModal(el.registerModal);
       await loadSession();
       notify(text[state.lang].registerOk);
+    } catch (err) {
+      notify(err.message);
+    }
+  });
+
+  el.forgotPasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      const data = await api("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify(Object.fromEntries(new FormData(el.forgotPasswordForm).entries())),
+      });
+      closeModal(el.forgotPasswordModal);
+      notify(data.message || "Link enviado");
+    } catch (err) {
+      notify(err.message);
+    }
+  });
+
+  el.resetPasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      await api("/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify(Object.fromEntries(new FormData(el.resetPasswordForm).entries())),
+      });
+      closeModal(el.resetPasswordModal);
+      el.resetPasswordForm.reset();
+      notify(text[state.lang].resetPasswordSuccess || "Senha redefinida com sucesso");
     } catch (err) {
       notify(err.message);
     }
@@ -324,9 +384,16 @@ function bindActions() {
 }
 
 async function init() {
+  setPageBackground();
   applyLanguage();
   bindModals();
   bindActions();
+  const token = getQueryParam('reset_token');
+  if (token && el.resetTokenInput) {
+    el.resetTokenInput.value = token;
+    openModal(el.resetPasswordModal);
+    history.replaceState(null, '', window.location.pathname);
+  }
   await loadSession();
   if (!state.isAuthenticated) {
     await loadPublicWeather();
