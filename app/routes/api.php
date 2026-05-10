@@ -11,6 +11,7 @@ return [
     'GET /api/weather/public-current' => ['WeatherController', 'publicCurrent'],
     'GET /api/weather/current' => ['WeatherController', 'fetchCurrent'],
     'GET /api/weather/records' => ['WeatherController', 'list'],
+    'GET /api/reports/weather-pdf' => ['WeatherController', 'exportPdf'],
     'PUT /api/weather/records' => ['WeatherController', 'update'],
     'DELETE /api/weather/records' => ['WeatherController', 'delete'],
 ];

@@ -15,6 +15,7 @@
                 <button id="languageToggle" class="btn link-btn" type="button">EN</button>
                 <button id="loginBtn" class="btn link-btn" type="button">Login</button>
                 <button id="registerBtn" class="btn pill-btn" type="button">Registar</button>
+                <button id="exportPdfBtn" class="btn pill-btn" type="button">Exportar PDF</button>
                 <button id="logoutBtn" class="btn link-btn" type="button" style="display:none;">Logout</button>
             </div>
         </header>

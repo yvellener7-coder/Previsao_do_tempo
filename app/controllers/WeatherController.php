@@ -64,6 +64,26 @@ class WeatherController
         JsonResponse::send(['records' => $recordModel->listByUser($userId)]);
     }
 
+    public function exportPdf(): void
+    {
+        $userId = Auth::requireUserId();
+        $userModel = new User($this->pdo);
+        $user = $userModel->findById($userId);
+        $userName = $user['name'] ?? 'Usuário';
+
+        $recordModel = new WeatherRecord($this->pdo);
+        $records = $recordModel->listByUser($userId);
+
+        $pdfService = new PdfReportService();
+        $pdf = $pdfService->generateReport($records, $userName);
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="relatorio_tempo.pdf"');
+        header('Content-Length: ' . strlen($pdf));
+        echo $pdf;
+        exit;
+    }
+
     public function update(): void
     {
         $userId = Auth::requireUserId();

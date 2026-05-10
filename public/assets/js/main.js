@@ -14,6 +14,7 @@ const text = {
     login: "Login",
     register: "Registar",
     logout: "Sair",
+    exportPdf: "Exportar PDF",
     search: "Pesquisar",
     placeholder: "Digite a cidade...",
     needLogin: "Faz login para pesquisar cidades.",
@@ -50,6 +51,7 @@ const el = {
   cityInput: document.getElementById("cityInput"),
   loginBtn: document.getElementById("loginBtn"),
   registerBtn: document.getElementById("registerBtn"),
+  exportPdfBtn: document.getElementById("exportPdfBtn"),
   logoutBtn: document.getElementById("logoutBtn"),
   searchBtn: document.querySelector("#weatherForm button[type='submit']"),
   languageToggle: document.getElementById("languageToggle"),
@@ -101,6 +103,7 @@ function applyLanguage() {
   el.loginBtn.textContent = text[state.lang].login;
   el.registerBtn.textContent = text[state.lang].register;
   el.logoutBtn.textContent = text[state.lang].logout;
+  el.exportPdfBtn.textContent = text[state.lang].exportPdf;
   el.searchBtn.textContent = text[state.lang].search;
   el.cityInput.placeholder = text[state.lang].placeholder;
   applyTheme();
@@ -110,6 +113,7 @@ function updateAuthUi() {
   const guest = !state.isAuthenticated;
   el.cityInput.disabled = guest;
   el.searchBtn.disabled = guest;
+  el.exportPdfBtn.disabled = guest;
   el.loginBtn.style.display = guest ? "inline-block" : "none";
   el.registerBtn.style.display = guest ? "inline-block" : "none";
   el.logoutBtn.style.display = guest ? "none" : "inline-block";
@@ -228,6 +232,15 @@ function bindActions() {
     } catch (err) {
       notify(err.message);
     }
+  });
+
+  el.exportPdfBtn.addEventListener("click", () => {
+    if (!state.isAuthenticated) {
+      notify(text[state.lang].needLogin);
+      openModal(el.loginModal);
+      return;
+    }
+    window.location.href = `${apiBase}/reports/weather-pdf`;
   });
 
   el.weatherForm.addEventListener("submit", async (e) => {

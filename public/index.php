@@ -17,6 +17,7 @@ require __DIR__ . '/../app/models/City.php';
 require __DIR__ . '/../app/models/WeatherRecord.php';
 
 require __DIR__ . '/../app/services/OpenWeatherService.php';
+require __DIR__ . '/../app/services/PdfReportService.php';
 
 require __DIR__ . '/../app/controllers/HomeController.php';
 require __DIR__ . '/../app/controllers/AuthController.php';
