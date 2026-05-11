@@ -86,9 +86,6 @@ const el = {
   heroTitle: document.querySelector(".hero-title"),
 };
 
-const weatherBackdrop = "url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1920&q=90')"; // chuva, sol e nuvens realista
-
-
 function weatherIcon(main) {
   const key = String(main || "").toLowerCase();
   if (key.includes("thunderstorm")) return "⛈️";
@@ -111,13 +108,6 @@ function weatherSceneClass(main) {
   if (key.includes("cloud")) return "clouds";
   if (key.includes("clear")) return "clear";
   return "default";
-}
-
-function setPageBackground() {
-  document.body.style.backgroundImage = `${weatherBackdrop}, linear-gradient(to bottom, rgba(10, 24, 58, 0.35), rgba(255, 255, 255, 0.15))`;
-  document.body.style.backgroundSize = 'cover';
-  document.body.style.backgroundPosition = 'center';
-  document.body.style.backgroundAttachment = 'fixed';
 }
 
 function notify(message) {
@@ -183,7 +173,6 @@ function paintWeather(w) {
   el.skyMessage.textContent = main;
   el.iconWrap.textContent = weatherIcon(main);
   el.heroText.textContent = `Condição atual: ${w.weather[0].description}`;
-  setPageBackground(scene);
   if (el.weatherVisual) {
     el.weatherVisual.className = 'weather-visual ' + scene;
   }

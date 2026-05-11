@@ -7,6 +7,86 @@
     <link rel="stylesheet" href="<?= htmlspecialchars($baseUrl) ?>/assets/css/style.css">
 </head>
 <body data-base-url="<?= htmlspecialchars($baseUrl) ?>">
+    <div class="animated-clouds">
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="none" class="clouds-layer clouds-slow">
+            <defs>
+                <filter id="cloudFilter">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+                </filter>
+            </defs>
+            <!-- Primeira camada de nuvens - movimento lento -->
+            <g filter="url(#cloudFilter)" opacity="0.7">
+                <ellipse cx="100" cy="150" rx="80" ry="40" fill="#ffffff"/>
+                <ellipse cx="160" cy="160" rx="70" ry="35" fill="#ffffff"/>
+                <ellipse cx="40" cy="170" rx="60" ry="30" fill="#ffffff"/>
+                
+                <ellipse cx="500" cy="120" rx="90" ry="45" fill="#ffffff"/>
+                <ellipse cx="570" cy="130" rx="75" ry="38" fill="#ffffff"/>
+                <ellipse cx="430" cy="145" rx="70" ry="35" fill="#ffffff"/>
+                
+                <ellipse cx="1000" cy="140" rx="85" ry="42" fill="#ffffff"/>
+                <ellipse cx="1070" cy="155" rx="80" ry="40" fill="#ffffff"/>
+                <ellipse cx="930" cy="160" rx="65" ry="32" fill="#ffffff"/>
+                
+                <ellipse cx="1500" cy="130" rx="95" ry="48" fill="#ffffff"/>
+                <ellipse cx="1580" cy="145" rx="85" ry="42" fill="#ffffff"/>
+                <ellipse cx="1420" cy="150" rx="75" ry="38" fill="#ffffff"/>
+            </g>
+        </svg>
+
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="none" class="clouds-layer clouds-medium">
+            <defs>
+                <filter id="cloudFilter2">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5"/>
+                </filter>
+            </defs>
+            <!-- Segunda camada de nuvens - movimento médio -->
+            <g filter="url(#cloudFilter2)" opacity="0.5">
+                <ellipse cx="200" cy="200" rx="75" ry="38" fill="#ffffff"/>
+                <ellipse cx="260" cy="215" rx="65" ry="32" fill="#ffffff"/>
+                <ellipse cx="140" cy="220" rx="55" ry="27" fill="#ffffff"/>
+                
+                <ellipse cx="700" cy="180" rx="88" ry="44" fill="#ffffff"/>
+                <ellipse cx="770" cy="195" rx="72" ry="36" fill="#ffffff"/>
+                <ellipse cx="630" cy="200" rx="68" ry="34" fill="#ffffff"/>
+                
+                <ellipse cx="1200" cy="190" rx="82" ry="41" fill="#ffffff"/>
+                <ellipse cx="1270" cy="205" rx="78" ry="39" fill="#ffffff"/>
+                <ellipse cx="1130" cy="210" rx="62" ry="31" fill="#ffffff"/>
+                
+                <ellipse cx="1700" cy="175" rx="92" ry="46" fill="#ffffff"/>
+                <ellipse cx="1780" cy="190" rx="82" ry="41" fill="#ffffff"/>
+                <ellipse cx="1620" cy="195" rx="72" ry="36" fill="#ffffff"/>
+            </g>
+        </svg>
+
+        <svg viewBox="0 0 1920 1080" preserveAspectRatio="none" class="clouds-layer clouds-fast">
+            <defs>
+                <filter id="cloudFilter3">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3"/>
+                </filter>
+            </defs>
+            <!-- Terceira camada de nuvens - movimento rápido (mais distante) -->
+            <g filter="url(#cloudFilter3)" opacity="0.3">
+                <ellipse cx="150" cy="250" rx="70" ry="35" fill="#ffffff"/>
+                <ellipse cx="210" cy="265" rx="60" ry="30" fill="#ffffff"/>
+                <ellipse cx="90" cy="270" rx="50" ry="25" fill="#ffffff"/>
+                
+                <ellipse cx="600" cy="230" rx="80" ry="40" fill="#ffffff"/>
+                <ellipse cx="670" cy="245" rx="70" ry="35" fill="#ffffff"/>
+                <ellipse cx="530" cy="250" rx="65" ry="32" fill="#ffffff"/>
+                
+                <ellipse cx="1100" cy="240" rx="78" ry="39" fill="#ffffff"/>
+                <ellipse cx="1170" cy="255" rx="75" ry="37" fill="#ffffff"/>
+                <ellipse cx="1030" cy="260" rx="60" ry="30" fill="#ffffff"/>
+                
+                <ellipse cx="1600" cy="225" rx="88" ry="44" fill="#ffffff"/>
+                <ellipse cx="1680" cy="240" rx="80" ry="40" fill="#ffffff"/>
+                <ellipse cx="1520" cy="245" rx="70" ry="35" fill="#ffffff"/>
+            </g>
+        </svg>
+    </div>
+
     <main class="page">
         <header class="topbar shell">
             <a href="#" class="brand">RENE METEO</a>
